@@ -26,8 +26,6 @@ It evaluates retrieval, not answer generation. Synthetic queries are useful for 
 
 Use Python 3.10 or newer, preferably in a virtual environment. Install the local HuggingFace embedder and dashboard features:
 
-**Before the first PyPI release:** run `pip install ".[hf,dashboard]"` from the repository root, or use the `uv` checkout setup below. The package-name installation commands in this guide require a published release; for an unreleased checkout, replace `retrieval-evaluator[EXTRAS]` with `.[EXTRAS]` when adding features.
-
 ```bash
 pip install "retrieval-evaluator[hf,dashboard]"
 ```
@@ -59,7 +57,7 @@ The dashboard binds to `127.0.0.1` by default because run artifacts can contain
 private corpus text. Use `--host` only when you intentionally want another interface,
 and apply appropriate network access controls.
 
-![retrieval-evaluator dashboard](docs/img/dashboard.png)
+![retrieval-evaluator dashboard](https://raw.githubusercontent.com/MaxBelitsky/retrieval-evaluator/main/docs/img/dashboard.png)
 
 The example deliberately includes German and Spanish queries: the English-only model misses some of them. Compare it with a multilingual embedder to see whether the misses recover.
 
