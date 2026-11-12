@@ -1,0 +1,10 @@
+{"id": "c0", "content": "Weaviate is an open-source vector database built for AI applications.", "document_id": "doc0", "chunk_id": 0}
+{"id": "c1", "content": "It supports hybrid search combining dense vectors with BM25 keyword search.", "document_id": "doc0", "chunk_id": 1}
+{"id": "c2", "content": "Weaviate can be deployed locally, on Kubernetes, or as a managed cloud service.", "document_id": "doc0", "chunk_id": 2}
+{"id": "c3", "content": "Embedding models convert text into dense numerical vectors that capture semantic meaning.", "document_id": "doc1", "chunk_id": 0}
+{"id": "c4", "content": "Models like BAAI/bge-m3 support multiple languages and long context windows up to 8192 tokens.", "document_id": "doc1", "chunk_id": 1}
+{"id": "c5", "content": "OpenAI's text-embedding-3-small produces 1536-dimensional vectors and is cost-effective.", "document_id": "doc1", "chunk_id": 2}
+{"id": "c6", "content": "RAG (Retrieval-Augmented Generation) combines a retriever with a generative LLM.", "document_id": "doc2", "chunk_id": 0}
+{"id": "c7", "content": "The retriever finds relevant documents; the generator produces an answer conditioned on them.", "document_id": "doc2", "chunk_id": 1}
+{"id": "c8", "content": "Recall@K measures what fraction of relevant chunks appear in the top-K retrieved results.", "document_id": "doc2", "chunk_id": 2}
+{"id": "c9", "content": "MRR@K (Mean Reciprocal Rank) measures the average inverse rank of the first relevant result.", "document_id": "doc2", "chunk_id": 3}

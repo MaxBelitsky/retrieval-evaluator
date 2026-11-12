@@ -1,0 +1,12 @@
+[theme]
+primaryColor="black"
+secondaryBackgroundColor="#F8F9FB"
+
+[client]
+toolbarMode = "minimal"
+
+[ui]
+hideTopBar = true
+
+[server]
+fileWatcherType = "none"

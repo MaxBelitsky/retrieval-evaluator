@@ -1,0 +1,60 @@
+# Local HuggingFace models require: pip install "retrieval-evaluator[hf]"
+multilingual-e5-base:
+  provider: hf
+  model: intfloat/multilingual-e5-base
+  max_tokens: 512
+  query_prompt: "query: "
+  passage_prompt: "passage: "
+
+# OpenAI embeddings — requires OPENAI_API_KEY
+# Install: pip install "retrieval-evaluator[openai]"
+text-embedding-3-small:
+  provider: openai
+  model: text-embedding-3-small
+  max_tokens: 8191
+
+# Cohere multilingual — requires COHERE_API_KEY
+# Install: pip install "retrieval-evaluator[cohere]"
+embed-multilingual-v3:
+  provider: cohere
+  model: embed-multilingual-v3.0
+  max_tokens: 512
+
+multilingual-e5-large:
+  provider: hf
+  model: intfloat/multilingual-e5-large
+  max_tokens: 512
+  query_prompt: "query: "
+  passage_prompt: "passage: "
+
+multilingual-e5-large-instruct:
+  provider: hf
+  model: intfloat/multilingual-e5-large-instruct
+  max_tokens: 512
+  query_prompt: "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: "
+  passage_prompt: null
+  precision: float16
+
+bge-m3:
+  provider: hf
+  model: BAAI/bge-m3
+  max_tokens: 512
+  query_prompt: null
+  passage_prompt: null
+  precision: float16
+
+bge-m3-full:
+  provider: hf
+  model: BAAI/bge-m3
+  max_tokens: 8192
+  query_prompt: null
+  passage_prompt: null
+  precision: float16
+
+e5-mistral-7b-instruct:
+  provider: hf
+  model: intfloat/e5-mistral-7b-instruct
+  max_tokens: 512
+  query_prompt: "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: "
+  passage_prompt: null
+  precision: float16

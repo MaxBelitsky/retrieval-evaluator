@@ -1,0 +1,331 @@
+# Main configuration file for retrieval-evaluator.
+#
+# Relative paths are resolved from the directory where you run the CLI.
+# Labels below reflect the current schema:
+#   [Required] expected to be present for the documented workflow
+#   [Optional] may be omitted because retrieval-evaluator has a default, or because
+#              the field only matters for a specific source/backend
+#
+# Workflow split:
+#   - `retrieval-evaluator eval` uses `settings`, `retrieval_evaluation.pipeline`,
+#     and `config/embedders.yml`
+#   - `retrieval-evaluator build-dataset` uses `settings`, `llm`,
+#     `retrieval_evaluation.dataset`, and optionally `database.weaviate`
+#   - the Streamlit dashboard uses `settings`
+
+settings:
+  # Relative paths are resolved from the directory where you run the command.
+  # [Required] Directory where per-run artifacts are written.
+  # Used by: `eval`, dashboard.
+  # Example: run_details
+  run_details_directory: run_details
+
+  # [Required] CSV file that stores one row per evaluation run.
+  # Used by: `eval`, dashboard.
+  # Example: eval_runs.csv
+  evaluation_results_file: eval_runs.csv
+
+  # [Required] Root directory containing BEIR-format datasets.
+  # The repo ships with `eval_data/EXAMPLE`.
+  # Used by: `eval`, `build-dataset`, dashboard.
+  # Example: eval_data
+  evaluation_dataset_dir: eval_data
+
+  # [Required] Directory used for cached raw source exports (Weaviate/Qdrant)
+  # and other dataset-building intermediates.
+  # Used by: `build-dataset`.
+  # Example: raw_data
+  raw_chunks_cache_dir: raw_data
+
+  # [Required] Path to the embedder definitions file.
+  # Used by: `eval`.
+  # Example: config/embedders.yml
+  embedders_config_path: config/embedders.yml
+
+  # [Required] Upper cap for auto batch-size discovery when encoding on GPU/MPS.
+  # Used by: `eval`, `build-dataset` when a model uses `batch_size="auto"`.
+  # Example: 2048
+  max_batch_size: 2048
+
+  # [Optional] Vector index backend for evaluation. Options: "numpy" (default), "weaviate".
+  # "numpy" is an in-process exact cosine index intended for modest evaluation corpora.
+  # It uses O(corpus_size * embedding_dimensions) memory and work per query and does not
+  # support hybrid search (alpha != 1.0). Use Weaviate for hybrid or larger-scale runs.
+  index_backend: numpy
+
+llm:
+  # [Required for `build-dataset`; unused for `eval`]
+  # LangChain model string used to generate synthetic queries.
+  # Examples:
+  #   "openai:gpt-4o"                             -> requires OPENAI_API_KEY
+  #   "anthropic:claude-sonnet-4-6"               -> requires ANTHROPIC_API_KEY
+  model: "openai:gpt-4o"
+
+  # [Optional for `build-dataset`]
+  # Maximum attempts per chunk when generating a synthetic query.
+  # Includes the initial request plus any retries.
+  # Example: 5
+  max_attempts: 5
+
+  # [Optional for `build-dataset`]
+  # Per-attempt timeout in seconds for LLM query generation.
+  # Must be positive.
+  # Example: 60
+  timeout_s: 60
+
+  # [Optional for `build-dataset`]
+  # Base delay in seconds for exponential backoff after retryable failures.
+  # Example: 1.0
+  retry_base_delay_s: 1.0
+
+  # [Optional for `build-dataset`]
+  # Upper cap in seconds for exponential backoff after retryable failures.
+  # Example: 30.0
+  retry_max_delay_s: 30.0
+
+  # [Optional for `build-dataset`]
+  # Random jitter added to each retry delay to avoid synchronized retries.
+  # Example: 0.5
+  retry_jitter_s: 0.5
+
+  # [Optional for `build-dataset`]
+  # Whether malformed model output (for example invalid JSON or a missing
+  # `question` field) should be retried.
+  # Example: true
+  retry_on_invalid_response: true
+
+retrieval_evaluation:
+  dataset:
+    # [Required for `build-dataset`]
+    # HuggingFace embedder used only for selecting a diverse subset of documents.
+    # This is separate from the embedders you evaluate later.
+    # Example: sentence-transformers/all-MiniLM-L6-v2
+    document_selection_embedder: sentence-transformers/all-MiniLM-L6-v2
+
+    # [Required for `build-dataset`]
+    # Number of documents to sample per language when `field_mapping.language`
+    # is available. If `language` is null or absent, the same number is sampled
+    # globally instead.
+    # Example: 30
+    n_docs_per_language: 30
+
+    # [Required for `build-dataset`]
+    # System prompt passed to the LLM query generator.
+    # The model is expected to return JSON with at least a `"question"` key.
+    query_generation_system_prompt: >
+      You are given a passage of text. Your task is to write a question for the passage
+      that is provided to you. The questions you generate will be used to evaluate a
+      retrieval system, so make sure to generate a question that a real user might ask.
+      In addition to that, return the language of the passage (include only 1 language).
+      Respond in JSON format: {"question": question, "language": language_abbreviation}.
+
+    # [Required for `build-dataset`]
+    # User prompt template for the LLM query generator.
+    # Must contain `{passage}`.
+    user_prompt_template: >
+      Write ONE realistic user question that can be answered completely by the passage
+      below - and only by that passage:\n\n'{passage}'
+
+    source:
+      # [Optional] Source type for `build-dataset`.
+      # Default if omitted: jsonl
+      # Supported values:
+      #   weaviate -> load chunks directly from a Weaviate collection
+      #   qdrant   -> load chunks directly from a Qdrant collection
+      #   jsonl    -> load chunks from local JSONL files
+      #   callable -> import a Python function/class/object as a custom connector
+      type: jsonl
+
+      weaviate:
+        # [Required when source.type=weaviate]
+        # Properties to fetch from the source collection.
+        # Include every field referenced by `field_mapping` and any filter field.
+        # Example: ["chunk_id", "language", "title", "content"]
+        extract_properties:
+          - chunk_id
+          - language
+          - title
+          - content
+
+        # [Optional when source.type=weaviate]
+        # Export batch size. If omitted, falls back to `database.weaviate.batch_size`.
+        # Example:
+        # batch_size: 100
+
+      qdrant:
+        # [Optional when source.type=qdrant]
+        # Base URL for the Qdrant instance.
+        # Default if omitted: http://localhost:6333
+        url: "http://localhost:6333"
+
+        # [Optional when source.type=qdrant]
+        # API key for authenticated Qdrant deployments.
+        # Use an empty string for no auth.
+        api_key: ""
+
+        # [Optional when source.type=qdrant]
+        # Number of points fetched per `scroll()` call.
+        # Default if omitted: 100
+        batch_size: 100
+
+        # [Optional when source.type=qdrant]
+        # Payload fields to return. If omitted, retrieval-evaluator infers them from
+        # `field_mapping` (plus any filter field).
+        payload_fields:
+          - chunk_id
+          - language
+          - title
+          - content
+
+        # [Optional when source.type=qdrant]
+        # Client timeout in seconds.
+        # Example:
+        # timeout: 30
+
+      jsonl:
+        # [Optional when source.type=jsonl, but recommended to set explicitly]
+        # Directory containing one JSONL file per collection.
+        # Default if omitted: raw_data/source_collections
+        root_dir: raw_data/source_collections
+
+        # [Optional when source.type=jsonl]
+        # File pattern used to map a collection name to a JSONL file.
+        # `{collection}` is replaced with the CLI collection name.
+        # Default if omitted: "{collection}.jsonl"
+        filename_template: "{collection}.jsonl"
+
+      callable:
+        # [Required when source.type=callable]
+        # Import path to a function, class, or object.
+        # Examples:
+        #   "my_project.connectors.qdrant:load_chunks"
+        #   "my_project.connectors.postgres:PostgresChunkSource"
+        path: "my_project.connectors:load_chunks"
+
+        # [Optional when source.type=callable]
+        # Keyword arguments passed to the loader function/class.
+        # Example: {"url": "http://localhost:6333", "api_key": ""}
+        kwargs: {}
+
+    field_mapping:
+      # [Required for `build-dataset`]
+      # Maps source-specific field names to the canonical names used internally.
+      # If your source already uses the canonical names, map them to themselves.
+      #
+      # Required canonical fields:
+      #   id     -> unique chunk identifier
+      #   text   -> chunk text
+      #   doc_id -> groups chunks into documents
+      #
+      # Optional canonical fields:
+      #   chunk_id -> within-document ordering field
+      #   language -> language code used for per-language document sampling
+
+      # [Required] Unique chunk identifier in the source data.
+      # Example: id
+      id: id
+
+      # [Required] Source field containing the chunk text.
+      # Example: content
+      text: content
+
+      # [Required] Source field that groups chunks into a document.
+      # Example: title, document_id, article_id
+      doc_id: title
+
+      # [Optional] Source field used to sort chunks inside a document.
+      # Strongly recommended if your source is already chunked.
+      # Example: chunk_id, position
+      chunk_id: chunk_id
+
+      # [Optional] Source field containing a language code such as `en` or `de`.
+      # Set to `null` to disable per-language document selection.
+      # Example: language
+      language: language
+
+      # [Optional] Source field used for a pre-filter before document selection.
+      # Use together with `chunk_filter_value`.
+      # Example: chunk_type
+      chunk_filter_field: null
+
+      # [Optional] Value to keep when `chunk_filter_field` is set.
+      # Rows that do not match are dropped before dataset generation.
+      # Example: text
+      chunk_filter_value: null
+
+    # [Required for `build-dataset`]
+    # Maximum number of KMeans iterations when selecting diverse documents.
+    # Used when the CLI flag `--max-km-iters` is omitted.
+    # Example: 100
+    max_kmeans_iters: 100
+
+    # [Required for `build-dataset`]
+    # Delay between LLM calls in seconds.
+    # Used when the CLI flag `--sleep-s` is omitted.
+    # Example: 1
+    sleep_s: 1
+
+    # [Required for `build-dataset`]
+    # Random seed for document selection.
+    # Used when the CLI flag `--seed` is omitted.
+    # Example: 42
+    default_seed: 42
+
+    # [Required for `build-dataset`]
+    # Maximum number of chunks for which queries will be generated.
+    # Remaining chunks stay in the corpus as retrieval candidates without generated questions.
+    # Used when the CLI flag `--chunk-limit` is omitted.
+    # Example: 200
+    chunk_limit: 200
+
+  pipeline:
+    # [Required for `eval`]
+    # Token length of the base micro-chunks in your BEIR dataset.
+    # If an embedder has a larger context window than this value, retrieval-evaluator
+    # can merge adjacent chunks into macro-chunks for evaluation.
+    # Example: 512
+    micro_chunk_tokens: 512
+
+    # [Required for `eval`]
+    # Default alpha values used when `--alpha` is omitted.
+    # alpha=1.0 -> pure vector search
+    # alpha=0.0 -> pure BM25
+    # values in between -> hybrid search
+    default_alphas:
+      - 1.0
+
+    # [Required for `eval`]
+    # Default ranking cut-offs used when `--k-values` is omitted.
+    # Example: [1, 3, 5, 10]
+    default_k_values:
+      - 1
+      - 3
+      - 5
+      - 10
+
+database:
+  weaviate:
+    # This block is only used when `retrieval_evaluation.dataset.source.type=weaviate`.
+    # The evaluation pipeline itself uses an embedded temporary Weaviate instance and
+    # ignores these connection settings.
+
+    # [Required when source.type=weaviate]
+    # HTTP base URL for the source Weaviate instance.
+    # Example: http://localhost:8080/
+    url: "http://localhost:8080/"
+
+    # [Optional when source.type=weaviate]
+    # API key for authenticated Weaviate deployments.
+    # Use an empty string for no auth.
+    key: ""
+
+    # [Optional when source.type=weaviate]
+    # Default export batch size for the Weaviate chunk source.
+    # Used when `retrieval_evaluation.dataset.source.weaviate.batch_size` is omitted.
+    batch_size: 100
+
+    # [Optional when source.type=weaviate]
+    # gRPC port used by the Weaviate Python client.
+    # Default if omitted by the code: 50051
+    # Example:
+    # grpc_port: 50051

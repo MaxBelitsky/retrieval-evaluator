@@ -1,0 +1,69 @@
+name: Bug report
+description: Report a broken workflow, regression, or unexpected result.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for reproducible bugs in `retrieval-evaluator`.
+        Include the command you ran, the config or flags you used, and the observed output.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences describing the bug.
+      placeholder: "`retrieval-evaluator eval --model ...` fails when ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: List the exact commands, flags, and inputs needed to reproduce the issue.
+      placeholder: |
+        1. Run `uv sync --locked --all-extras --group dev`
+        2. Run `uv run retrieval-evaluator ...`
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: The command should complete and write ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      placeholder: The command fails with ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Share the versions and environment details that might matter.
+      placeholder: |
+        - OS:
+        - Python:
+        - uv:
+        - retrieval-evaluator:
+        - Source type / backend:
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or traceback
+      description: Paste the shortest useful snippet. Redact secrets before submitting.
+      render: text

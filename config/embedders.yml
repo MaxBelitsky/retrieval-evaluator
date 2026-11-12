@@ -1,0 +1,21 @@
+# Embedder definitions for retrieval-evaluator.
+# Each top-level key is the experiment name shown in results.
+# Full annotated reference: config/retrieval-evaluator.example.yaml
+
+# HuggingFace (local) — no API key needed; install retrieval-evaluator[hf]
+all-MiniLM-L6-v2:
+  provider: hf
+  model: sentence-transformers/all-MiniLM-L6-v2
+  max_tokens: 256
+
+# OpenAI — requires OPENAI_API_KEY and: pip install "retrieval-evaluator[openai]"
+# text-embedding-3-small:
+#   provider: openai
+#   model: text-embedding-3-small
+#   max_tokens: 8191
+
+# Cohere — requires COHERE_API_KEY and: pip install "retrieval-evaluator[cohere]"
+# embed-multilingual-v3:
+#   provider: cohere
+#   model: embed-multilingual-v3.0
+#   max_tokens: 512

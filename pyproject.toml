@@ -1,0 +1,118 @@
+[project]
+name = "retrieval-evaluator"
+version = "0.1.0"
+description = "Evaluate embedding models (HuggingFace, OpenAI, Cohere) on your own RAG corpus"
+authors = [
+    { name = "Max Belitsky", email = "md.belitsky@gmail.com" },
+]
+keywords = ["rag", "retrieval", "embeddings", "evaluation", "benchmark", "information-retrieval", "vector-search"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+]
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26.0",
+    "pyyaml>=6.0.2",
+    "pandas>=2.2.0",
+]
+
+[project.optional-dependencies]
+weaviate = [
+    "weaviate-client>=4.14.4",
+]
+qdrant = [
+    "qdrant-client>=1.9.0",
+]
+dashboard = [
+    "altair>=5.0.0",
+    "streamlit>=1.45.1",
+]
+dataset = [
+    "accelerate>=1.7.0",
+    "langchain>=1.2.15",
+    "scikit-learn>=1.6.1",
+    "sentence-transformers>=4.1.0",
+]
+openai = [
+    "openai>=1.0.0",
+    "langchain-openai>=1.0.0",
+]
+anthropic = [
+    "langchain-anthropic>=1.0.0",
+]
+cohere = [
+    "cohere>=5.0.0",
+]
+hf = [
+    "accelerate>=1.7.0",
+    "sentence-transformers>=4.1.0",
+]
+datasets = [
+    "datasets>=2.0.0",
+]
+all = [
+    "accelerate>=1.7.0",
+    "altair>=5.0.0",
+    "cohere>=5.0.0",
+    "datasets>=2.0.0",
+    "langchain>=1.2.15",
+    "langchain-anthropic>=1.0.0",
+    "langchain-openai>=1.0.0",
+    "openai>=1.0.0",
+    "qdrant-client>=1.9.0",
+    "scikit-learn>=1.6.1",
+    "sentence-transformers>=4.1.0",
+    "streamlit>=1.45.1",
+    "weaviate-client>=4.14.4",
+]
+
+[project.scripts]
+retrieval-evaluator = "retrieval_evaluator.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/MaxBelitsky/retrieval-evaluator"
+Source = "https://github.com/MaxBelitsky/retrieval-evaluator"
+Issues = "https://github.com/MaxBelitsky/retrieval-evaluator/issues"
+Changelog = "https://github.com/MaxBelitsky/retrieval-evaluator/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+dev = [
+    "check-wheel-contents>=0.6",
+    "pytest>=8.0",
+    "ruff>=0.9.0",
+    "tomli>=2.0; python_version < '3.11'",
+    "twine>=6.0",
+]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.uv]
+default-groups = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["retrieval_evaluator*"]
+
+[tool.setuptools.package-data]
+retrieval_evaluator = ["data/**/*", "py.typed"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]

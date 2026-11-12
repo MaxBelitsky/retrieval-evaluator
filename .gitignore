@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+
+# Test, lint, and coverage output
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Local tools and editors
+.claude/
+.superpowers/
+.uv-cache/
+.vscode/
+.idea/
+.worktrees/
+.DS_Store
+*.ipynb_checkpoints/
+
+# Secrets and machine-specific configuration
+.env
+.env.*
+.pypirc
+.config/
+config/*.yaml
+!config/*.example.yaml
+
+# Generated retrieval-evaluator data
+raw_data/
+run_details/
+eval_runs.csv
+eval_data/*
+!eval_data/EXAMPLE/
+!eval_data/EXAMPLE/**

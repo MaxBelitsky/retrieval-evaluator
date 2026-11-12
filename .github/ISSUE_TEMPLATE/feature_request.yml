@@ -1,0 +1,41 @@
+name: Feature request
+description: Propose an improvement, new workflow, or product direction.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for new capabilities, UX improvements, or extension points.
+        Focus on the user problem first, then the proposed solution.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What is difficult, missing, or awkward today?
+      placeholder: It is hard to ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior you want.
+      placeholder: Add a command / config option / connector that ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional. Share workarounds or other designs you considered.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Optional. Add examples, prior art, or screenshots if relevant.
